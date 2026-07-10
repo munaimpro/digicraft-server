@@ -1,0 +1,2 @@
+# digicraft-server
+Digicraft Server
