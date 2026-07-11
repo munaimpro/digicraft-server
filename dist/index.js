@@ -26,7 +26,7 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
         // Create database and collections
-        const db = client.db('fable');
+        const db = client.db('digicraft');
         const ebookCollection = db.collection('ebooks');
         const bookmarkCollection = db.collection('bookmarks');
         const purchaseCollection = db.collection('purchases');
