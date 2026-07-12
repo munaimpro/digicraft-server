@@ -1,20 +1,20 @@
-import express, {Request, Response, NextFunction} from "express";
-import dotenv from "dotenv";
-import cors from "cors";
+import express, { NextFunction, Request, Response } from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
 import { MongoClient, ServerApiVersion, ObjectId } from 'mongodb';
-import { jwtVerify, createRemoteJWKSet } from 'jose-cjs';
 dotenv.config();
+import { jwtVerify, createRemoteJWKSet } from 'jose-cjs';
 
-const mongodburi = process.env.MONGO_URI as string;
+const mongodburi = process.env.MONGO_URI!;
 
 const app = express();
-const PORT = Number(process.env.PORT) || 8000;
+const PORT = process.env.PORT || 8000;
 
 app.use(cors());
 app.use(express.json());
 
 const client = new MongoClient(mongodburi, {
-    serverApi: {
+    serverApi: { 
         version: ServerApiVersion.v1,
         strict: true,
         deprecationErrors: true,
@@ -28,16 +28,10 @@ async function run() {
 
         // Create database and collections
         const db = client.db('digicraft');
-        const ebookCollection = db.collection('ebooks');
-        const bookmarkCollection = db.collection('bookmarks');
-        const purchaseCollection = db.collection('purchases');
-        const userCollection = db.collection('user');
-        const transactionCollection = db.collection('transactions');
-        const verifiedWriterCollection = db.collection('verified-writers');
-
+        const productCollection = db.collection('products');
 
         const JWKS = createRemoteJWKSet(
-            new URL(`${process.env.CLIENT_URL}/api/auth/jwks`)
+            new URL(`${process.env.CLIENT_URL!}/api/auth/jwks`)
         );
 
         // Verify Token
@@ -62,6 +56,12 @@ async function run() {
             }
         }
 
+        // Find all products for explore product page
+        app.get('/my-products', async (request:Request, response:Response) => {
+            const result = await productCollection.find().toArray();
+            response.json(result);
+        });
+
         // Send a ping to confirm a successful connection
         // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -72,11 +72,12 @@ async function run() {
 }
 run().catch(console.dir);
 
+// একটি সিম্পল রুট (Route)
+app.get('/', (req: Request, res: Response) => {
+    res.send('Typescript Server is Running Successfully!');
+});
 
-app.get('/', (request:Request, response:Response) => {
-    response.send('Server is running fine')
-})
-
+// Server Listening
 app.listen(PORT, () => {
-    console.log(`Server running on PORT ${PORT}`);
-})
+    console.log(`[server]: Server is running at http://localhost:${PORT}`);
+});

@@ -1,15 +1,10 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
-    "compilerOptions": {
-      "target": "ES2022",
-      "module": "CommonJS",
-      "strict": true,
-      "rootDir": "./src",
-      "outDir": "./dist",
-      "esModuleInterop": true,
-      "skipLibCheck": true,
-      "types": [
-        "node"
-      ]
-    }
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "strict": true,
+    "rootDir": "./src",
+    "outDir": "./dist"
+  }
 }
