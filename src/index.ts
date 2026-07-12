@@ -57,8 +57,15 @@ async function run() {
         }
 
         // Find all products for explore product page
-        app.get('/my-products', async (request:Request, response:Response) => {
+        app.get('/digicraft-products', async (request:Request, response:Response) => {
             const result = await productCollection.find().toArray();
+            response.json(result);
+        });
+
+        // Find single product
+        app.get('/digicraft-product/:productId', async (request:Request, response:Response) => {
+            const { productId } = request.params;
+            const result = await productCollection.findOne({ _id: new ObjectId(productId) });
             response.json(result);
         });
 
