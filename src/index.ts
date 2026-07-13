@@ -69,6 +69,26 @@ async function run() {
             response.json(result);
         });
 
+        // Find featured products
+        app.get('/featured-products', async (request:Request, response:Response) => {
+            try {
+                const result = await productCollection
+                    .find().sort({ createdAt: -1 }) // newest first
+                    .limit(4)
+                    .toArray();
+
+                response.json(result);
+
+            } catch (error) {
+                console.error(error);
+
+                response.status(500).json({
+                    success: false,
+                    message: 'Failed to fetch featured ebooks'
+                });
+            }
+        });
+
         // Send a ping to confirm a successful connection
         // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -79,7 +99,7 @@ async function run() {
 }
 run().catch(console.dir);
 
-// একটি সিম্পল রুট (Route)
+
 app.get('/', (req: Request, res: Response) => {
     res.send('Typescript Server is Running Successfully!');
 });
