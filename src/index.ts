@@ -89,6 +89,17 @@ async function run() {
             }
         });
 
+        // Insert single product
+        app.post('/digicraft-product', async (request:Request, response:Response) => {
+            const productData = request.body;
+            const finalProductData = {
+                ...productData,
+                createdAt: new Date()
+            };
+            const result = await productCollection.insertOne(finalProductData);
+            response.json(result);
+        });
+
         // Send a ping to confirm a successful connection
         // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
