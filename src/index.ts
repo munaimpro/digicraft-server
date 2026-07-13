@@ -100,6 +100,13 @@ async function run() {
             response.json(result);
         });
 
+        // Delete single product
+        app.delete('/digicraft-product/:productId', async (request:Request, response:Response) => {
+            const { productId } = request.params;
+            const result = await productCollection.deleteOne({ _id: new ObjectId(productId) });
+            response.json(result);
+        })
+
         // Send a ping to confirm a successful connection
         // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
