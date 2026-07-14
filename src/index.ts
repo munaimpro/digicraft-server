@@ -29,6 +29,7 @@ async function run() {
         // Create database and collections
         const db = client.db('digicraft');
         const productCollection = db.collection('products');
+        const purchaseCollection = db.collection('purchases');
 
         const JWKS = createRemoteJWKSet(
             new URL(`${process.env.CLIENT_URL!}/api/auth/jwks`)
@@ -101,11 +102,55 @@ async function run() {
         });
 
         // Delete single product
-        app.delete('/digicraft-product/:productId', async (request:Request, response:Response) => {
+        app.delete('/digicraft-product/:productId', async (request: Request, response: Response) => {
             const { productId } = request.params;
             const result = await productCollection.deleteOne({ _id: new ObjectId(productId) });
             response.json(result);
-        })
+        });
+
+        // Insert single purchase
+        app.post('/purchase', async (request:Request, response:Response) => {
+            const { productId, productTitle, imageUrl, totalAmount, downloadUrl, sellerId, buyerId } = request.body;
+
+            const purchaseData = {
+                productId,
+                productTitle,
+                imageUrl,
+                totalAmount,
+                downloadUrl,
+                sellerId,
+                buyerId,
+                purchaseDate: new Date()
+            };
+
+            const isPurchaseExist = await purchaseCollection.findOne({
+                productId,
+                buyerId
+            });
+
+            if (isPurchaseExist) {
+                return response.send({
+                    success: false,
+                    message: "Already Purchased"
+                });
+            }
+
+            const purchaseResponse = await purchaseCollection.insertOne(purchaseData);
+
+            return response.send({
+                success: true,
+                purchaseInsertedId: purchaseResponse.insertedId,
+            });
+        });
+
+        // Find all purchase history for a specific user
+        app.get('/purchase-history/:buyerId', async (request, response) => {
+            const { buyerId } = request.params;
+            const result = await purchaseCollection.find({
+                buyerId
+            }).toArray();
+            response.send(result);
+        });
 
         // Send a ping to confirm a successful connection
         // await client.db("admin").command({ ping: 1 });
